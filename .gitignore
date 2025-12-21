@@ -53,3 +53,36 @@ dkms.conf
 
 # debug information files
 *.dwo
+
+# ============================================================================
+# Project-specific entries for strngr
+# ============================================================================
+
+# Build directory
+build/
+
+# Coverage report directory
+coverage_report/
+
+# Test coverage files (gcov)
+*.gcda
+*.gcno
+*.gcov
+*.info
+
+# Test executables
+test_runner
+test_runner.exe
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.bak
+*.log
