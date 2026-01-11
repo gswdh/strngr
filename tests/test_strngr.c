@@ -790,3 +790,331 @@ void test_strngr_strstr_partial_match_not_found(void)
     TEST_ASSERT_NULL(strngr_strstr(str1, str2));
 }
 
+// ============================================================================
+// Tests for strngr_strsub
+// ============================================================================
+
+void test_strngr_strsub_null_src_string(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    str_t src;
+    src.str = NULL;
+    src.len = 0;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    strcpy(buffer2, "test");
+    str2.len = 4;
+    
+    strngr_strsub(&str2, src, 0, 2);
+    // Should not modify destination
+    TEST_ASSERT_EQUAL_UINT32(4, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("test", buffer2, 4);
+}
+
+void test_strngr_strsub_null_dst_string(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    str_t dst;
+    dst.str = NULL;
+    
+    strngr_strsub(&dst, str1, 0, 2);
+    // Should not crash
+}
+
+void test_strngr_strsub_positive_start_normal(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello World");
+    str1.len = 11;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, 6, 5);
+    
+    TEST_ASSERT_EQUAL_UINT32(5, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("World", buffer2, 5);
+}
+
+void test_strngr_strsub_positive_start_at_beginning(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, 0, 5);
+    
+    TEST_ASSERT_EQUAL_UINT32(5, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("Hello", buffer2, 5);
+}
+
+void test_strngr_strsub_positive_start_partial(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello World");
+    str1.len = 11;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, 0, 5);
+    
+    TEST_ASSERT_EQUAL_UINT32(5, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("Hello", buffer2, 5);
+}
+
+void test_strngr_strsub_positive_start_single_char(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, 2, 1);
+    
+    TEST_ASSERT_EQUAL_UINT32(1, str2.len);
+    TEST_ASSERT_EQUAL('l', buffer2[0]);
+}
+
+void test_strngr_strsub_positive_start_out_of_bounds(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    strcpy(buffer2, "test");
+    str2.len = 4;
+    
+    strngr_strsub(&str2, str1, 10, 2);
+    // Should not modify destination
+    TEST_ASSERT_EQUAL_UINT32(4, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("test", buffer2, 4);
+}
+
+void test_strngr_strsub_positive_start_length_exceeds_remaining(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    strcpy(buffer2, "test");
+    str2.len = 4;
+    
+    strngr_strsub(&str2, str1, 3, 5); // length 5 but only 2 chars remain
+    // Should not modify destination
+    TEST_ASSERT_EQUAL_UINT32(4, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("test", buffer2, 4);
+}
+
+void test_strngr_strsub_negative_start_minus_one(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, -1, 1);
+    
+    TEST_ASSERT_EQUAL_UINT32(1, str2.len);
+    TEST_ASSERT_EQUAL('o', buffer2[0]);
+}
+
+void test_strngr_strsub_negative_start_minus_two(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, -2, 2);
+    
+    TEST_ASSERT_EQUAL_UINT32(2, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("lo", buffer2, 2);
+}
+
+void test_strngr_strsub_negative_start_from_end(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello World");
+    str1.len = 11;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, -5, 5);
+    
+    TEST_ASSERT_EQUAL_UINT32(5, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("World", buffer2, 5);
+}
+
+void test_strngr_strsub_negative_start_entire_string(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, -5, 5);
+    
+    TEST_ASSERT_EQUAL_UINT32(5, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("Hello", buffer2, 5);
+}
+
+void test_strngr_strsub_negative_start_too_negative(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    strcpy(buffer2, "test");
+    str2.len = 4;
+    
+    strngr_strsub(&str2, str1, -10, 2);
+    // Should not modify destination (start would be -5, invalid)
+    TEST_ASSERT_EQUAL_UINT32(4, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("test", buffer2, 4);
+}
+
+void test_strngr_strsub_negative_start_length_exceeds_remaining(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    strcpy(buffer2, "test");
+    str2.len = 4;
+    
+    strngr_strsub(&str2, str1, -3, 5); // length 5 but only 3 chars remain
+    // Should not modify destination
+    TEST_ASSERT_EQUAL_UINT32(4, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("test", buffer2, 4);
+}
+
+void test_strngr_strsub_length_exceeds_dst_max_len(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello World");
+    str1.len = 11;
+    
+    strngr_new(&str2, buffer2, 5); // max_len = 5
+    
+    strcpy(buffer2, "test");
+    str2.len = 4;
+    
+    strngr_strsub(&str2, str1, 0, 10); // length 10 > dst max_len 5
+    // Should not modify destination
+    TEST_ASSERT_EQUAL_UINT32(4, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("test", buffer2, 4);
+}
+
+void test_strngr_strsub_zero_length(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    strcpy(buffer2, "test");
+    str2.len = 4;
+    
+    strngr_strsub(&str2, str1, 0, 0);
+    
+    TEST_ASSERT_EQUAL_UINT32(0, str2.len);
+}
+
+void test_strngr_strsub_exact_fit(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, 5); // max_len = 5
+    
+    strngr_strsub(&str2, str1, 0, 5);
+    
+    TEST_ASSERT_EQUAL_UINT32(5, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("Hello", buffer2, 5);
+}
+
+void test_strngr_strsub_negative_start_exact_fit(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, 3); // max_len = 3
+    
+    strngr_strsub(&str2, str1, -3, 3);
+    
+    TEST_ASSERT_EQUAL_UINT32(3, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("llo", buffer2, 3);
+}
+
+void test_strngr_strsub_positive_start_at_end(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    strcpy(buffer2, "test");
+    str2.len = 4;
+    
+    strngr_strsub(&str2, str1, 5, 1);
+    // Should not modify (start equals length, out of bounds)
+    TEST_ASSERT_EQUAL_UINT32(4, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("test", buffer2, 4);
+}
+
+void test_strngr_strsub_negative_start_single_char_at_end(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, -1, 1);
+    
+    TEST_ASSERT_EQUAL_UINT32(1, str2.len);
+    TEST_ASSERT_EQUAL('o', buffer2[0]);
+}
+
+void test_strngr_strsub_middle_substring(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello World");
+    str1.len = 11;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, 2, 3);
+    
+    TEST_ASSERT_EQUAL_UINT32(3, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("llo", buffer2, 3);
+}
+
+void test_strngr_strsub_negative_start_middle_substring(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello World");
+    str1.len = 11;
+    
+    strngr_new(&str2, buffer2, sizeof(buffer2));
+    
+    strngr_strsub(&str2, str1, -9, 3);
+    
+    TEST_ASSERT_EQUAL_UINT32(3, str2.len);
+    TEST_ASSERT_EQUAL_MEMORY("llo", buffer2, 3);
+}
+

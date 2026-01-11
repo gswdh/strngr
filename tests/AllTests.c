@@ -85,6 +85,30 @@ void test_strngr_strstr_needle_equal_length_haystack(void);
 void test_strngr_strstr_needle_longer_than_haystack_by_one(void);
 void test_strngr_strstr_partial_match_not_found(void);
 
+// strngr_strsub tests
+void test_strngr_strsub_null_src_string(void);
+void test_strngr_strsub_null_dst_string(void);
+void test_strngr_strsub_positive_start_normal(void);
+void test_strngr_strsub_positive_start_at_beginning(void);
+void test_strngr_strsub_positive_start_partial(void);
+void test_strngr_strsub_positive_start_single_char(void);
+void test_strngr_strsub_positive_start_out_of_bounds(void);
+void test_strngr_strsub_positive_start_length_exceeds_remaining(void);
+void test_strngr_strsub_negative_start_minus_one(void);
+void test_strngr_strsub_negative_start_minus_two(void);
+void test_strngr_strsub_negative_start_from_end(void);
+void test_strngr_strsub_negative_start_entire_string(void);
+void test_strngr_strsub_negative_start_too_negative(void);
+void test_strngr_strsub_negative_start_length_exceeds_remaining(void);
+void test_strngr_strsub_length_exceeds_dst_max_len(void);
+void test_strngr_strsub_zero_length(void);
+void test_strngr_strsub_exact_fit(void);
+void test_strngr_strsub_negative_start_exact_fit(void);
+void test_strngr_strsub_positive_start_at_end(void);
+void test_strngr_strsub_negative_start_single_char_at_end(void);
+void test_strngr_strsub_middle_substring(void);
+void test_strngr_strsub_negative_start_middle_substring(void);
+
 int main(void)
 {
     UNITY_BEGIN();
@@ -169,6 +193,30 @@ int main(void)
     RUN_TEST(test_strngr_strstr_needle_equal_length_haystack);
     RUN_TEST(test_strngr_strstr_needle_longer_than_haystack_by_one);
     RUN_TEST(test_strngr_strstr_partial_match_not_found);
+
+    // strngr_strsub tests
+    RUN_TEST(test_strngr_strsub_null_src_string);
+    RUN_TEST(test_strngr_strsub_null_dst_string);
+    RUN_TEST(test_strngr_strsub_positive_start_normal);
+    RUN_TEST(test_strngr_strsub_positive_start_at_beginning);
+    RUN_TEST(test_strngr_strsub_positive_start_partial);
+    RUN_TEST(test_strngr_strsub_positive_start_single_char);
+    RUN_TEST(test_strngr_strsub_positive_start_out_of_bounds);
+    RUN_TEST(test_strngr_strsub_positive_start_length_exceeds_remaining);
+    RUN_TEST(test_strngr_strsub_negative_start_minus_one);
+    RUN_TEST(test_strngr_strsub_negative_start_minus_two);
+    RUN_TEST(test_strngr_strsub_negative_start_from_end);
+    RUN_TEST(test_strngr_strsub_negative_start_entire_string);
+    RUN_TEST(test_strngr_strsub_negative_start_too_negative);
+    RUN_TEST(test_strngr_strsub_negative_start_length_exceeds_remaining);
+    RUN_TEST(test_strngr_strsub_length_exceeds_dst_max_len);
+    RUN_TEST(test_strngr_strsub_zero_length);
+    RUN_TEST(test_strngr_strsub_exact_fit);
+    RUN_TEST(test_strngr_strsub_negative_start_exact_fit);
+    RUN_TEST(test_strngr_strsub_positive_start_at_end);
+    RUN_TEST(test_strngr_strsub_negative_start_single_char_at_end);
+    RUN_TEST(test_strngr_strsub_middle_substring);
+    RUN_TEST(test_strngr_strsub_negative_start_middle_substring);
 
     return UNITY_END();
 }

@@ -23,5 +23,6 @@ void     strngr_strncat(str_t *dst, const str_t src, uint32_t n);
 int32_t  strngr_strncmp(const str_t a, const str_t b, uint32_t n);
 void     strngr_strncpy(const str_t src, str_t *dst, uint32_t n);
 char    *strngr_strstr(const str_t hay, const str_t needle);
+void     strngr_strsub(str_t *dst, const str_t src, const int32_t start, const uint32_t length);
 
 #endif

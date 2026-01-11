@@ -261,3 +261,39 @@ char *strngr_strstr(const str_t hay, const str_t needle)
 
     return NULL;
 }
+
+void strngr_strsub(str_t *dst, const str_t src, const int32_t start, const uint32_t length)
+{
+    if ((src.str == NULL) || (dst->str == NULL))
+    {
+        return;
+    }
+
+    /* Convert negative start to offset from end */
+    int32_t actual_start = start;
+    if (start < 0)
+    {
+        actual_start = (int32_t)src.len + start;
+    }
+
+    /* Validate start position */
+    if ((actual_start < 0) || ((uint32_t)actual_start >= src.len))
+    {
+        return;
+    }
+
+    /* Check that length doesn't exceed remaining string from start position */
+    if (length > (src.len - (uint32_t)actual_start))
+    {
+        return;
+    }
+
+    /* Check that length doesn't exceed destination capacity */
+    if (length > dst->max_len)
+    {
+        return;
+    }
+
+    memcpy((void *)dst->str, (void *)(src.str + actual_start), (size_t)length);
+    dst->len = length;
+}
