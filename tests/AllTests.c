@@ -18,6 +18,13 @@ void test_strngr_new_s_zero_length(void);
 void test_strngr_new_s_valid_string_copy(void);
 void test_strngr_new_s_string_longer_than_buffer(void);
 
+// strngr_reset_to_empty tests
+void test_strngr_reset_to_empty_null_pointer(void);
+void test_strngr_reset_to_empty_valid_string(void);
+void test_strngr_reset_to_empty_string_with_content(void);
+void test_strngr_reset_to_empty_partially_filled_buffer(void);
+void test_strngr_reset_to_empty_preserves_max_len(void);
+
 // strngr_strlen tests
 void test_strngr_strlen_null_string(void);
 void test_strngr_strlen_valid_length(void);
@@ -126,6 +133,13 @@ int main(void)
     RUN_TEST(test_strngr_new_s_zero_length);
     RUN_TEST(test_strngr_new_s_valid_string_copy);
     RUN_TEST(test_strngr_new_s_string_longer_than_buffer);
+
+    // strngr_reset_to_empty tests
+    RUN_TEST(test_strngr_reset_to_empty_null_pointer);
+    RUN_TEST(test_strngr_reset_to_empty_valid_string);
+    RUN_TEST(test_strngr_reset_to_empty_string_with_content);
+    RUN_TEST(test_strngr_reset_to_empty_partially_filled_buffer);
+    RUN_TEST(test_strngr_reset_to_empty_preserves_max_len);
 
     // strngr_strlen tests
     RUN_TEST(test_strngr_strlen_null_string);

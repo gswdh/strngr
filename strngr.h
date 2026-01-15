@@ -14,6 +14,7 @@ typedef struct
 char *strngr_new(str_t *str, char *mem, const uint32_t mem_len);
 char *strngr_new_s(str_t *str, char *mem, const uint32_t mem_len, const char *string);
 
+void     strngr_reset_to_empty(str_t *str);
 void     strngr_strcat(str_t *dst, const str_t src);
 char    *strngr_strchr(const str_t src, const char matcher);
 void     strngr_strcpy(const str_t src, str_t *dst);

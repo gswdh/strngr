@@ -131,6 +131,78 @@ void test_strngr_new_s_string_longer_than_buffer(void)
 }
 
 // ============================================================================
+// Tests for strngr_reset_to_empty
+// ============================================================================
+
+void test_strngr_reset_to_empty_null_pointer(void)
+{
+    // Should not crash when passed NULL
+    strngr_reset_to_empty(NULL);
+    // If we get here, the test passes
+}
+
+void test_strngr_reset_to_empty_valid_string(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    str1.len = 0;
+    
+    strngr_reset_to_empty(&str1);
+    
+    TEST_ASSERT_EQUAL_UINT32(0, str1.len);
+    // Verify buffer is zeroed
+    for (uint32_t i = 0; i < sizeof(buffer1); i++)
+    {
+        TEST_ASSERT_EQUAL(0, buffer1[i]);
+    }
+}
+
+void test_strngr_reset_to_empty_string_with_content(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Hello World");
+    str1.len = 11;
+    
+    strngr_reset_to_empty(&str1);
+    
+    TEST_ASSERT_EQUAL_UINT32(0, str1.len);
+    // Verify buffer is zeroed
+    for (uint32_t i = 0; i < sizeof(buffer1); i++)
+    {
+        TEST_ASSERT_EQUAL(0, buffer1[i]);
+    }
+}
+
+void test_strngr_reset_to_empty_partially_filled_buffer(void)
+{
+    strngr_new(&str1, buffer1, sizeof(buffer1));
+    strcpy(buffer1, "Test");
+    str1.len = 4;
+    
+    strngr_reset_to_empty(&str1);
+    
+    TEST_ASSERT_EQUAL_UINT32(0, str1.len);
+    // Verify entire buffer is zeroed (not just up to len)
+    for (uint32_t i = 0; i < sizeof(buffer1); i++)
+    {
+        TEST_ASSERT_EQUAL(0, buffer1[i]);
+    }
+}
+
+void test_strngr_reset_to_empty_preserves_max_len(void)
+{
+    strngr_new(&str1, buffer1, 50);
+    strcpy(buffer1, "Hello");
+    str1.len = 5;
+    uint32_t original_max_len = str1.max_len;
+    
+    strngr_reset_to_empty(&str1);
+    
+    TEST_ASSERT_EQUAL_UINT32(0, str1.len);
+    TEST_ASSERT_EQUAL_UINT32(original_max_len, str1.max_len);
+    TEST_ASSERT_EQUAL_PTR(buffer1, str1.str);
+}
+
+// ============================================================================
 // Tests for strngr_strlen
 // ============================================================================
 

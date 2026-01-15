@@ -50,12 +50,23 @@ char *strngr_new_s(str_t *str, char *mem, const uint32_t mem_len, const char *st
     }
 
     memset((void *)str->str, 0U, str->max_len);
-    memcpy((void *)str->str, (void *)string, (size_t)cpy_len);
+    memcpy((void *)str->str, (const void *)string, (size_t)cpy_len);
 
     /* Set the length to match the copied data */
     str->len = cpy_len;
 
     return str->str;
+}
+
+void strngr_reset_to_empty(str_t *str)
+{
+    if (str == NULL)
+    {
+        return;
+    }
+
+    str->len = 0U;
+    memset((void *)str->str, 0U, str->max_len);
 }
 
 void strngr_strcat(str_t *dst, const str_t src)
