@@ -1,6 +1,7 @@
 #include "strngr.h"
 
 #include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
 char *strngr_new(str_t *str, char *mem, const uint32_t mem_len)
@@ -273,38 +274,61 @@ char *strngr_strstr(const str_t hay, const str_t needle)
     return NULL;
 }
 
-void strngr_strsub(str_t *dst, const str_t src, const int32_t start, const uint32_t length)
+str_t strngr_strsub(const str_t src, const int32_t start, const int32_t end)
 {
-    if ((src.str == NULL) || (dst->str == NULL))
+    str_t result = {0U, 0U, NULL, 0U};
+
+    if (src.str == NULL)
     {
-        return;
+        return result;
     }
+
+    /* Prevent overflow when casting src.len to signed */
+    if (src.len > (uint32_t)INT32_MAX)
+    {
+        return result;
+    }
+
+    int32_t src_len = (int32_t)src.len;
 
     /* Convert negative start to offset from end */
     int32_t actual_start = start;
     if (start < 0)
     {
-        actual_start = (int32_t)src.len + start;
+        actual_start = src_len + start;
     }
 
-    /* Validate start position */
-    if ((actual_start < 0) || ((uint32_t)actual_start >= src.len))
+    /* Convert negative end to offset from end */
+    int32_t actual_end = end;
+    if (end < 0)
     {
-        return;
+        actual_end = src_len + end;
     }
 
-    /* Check that length doesn't exceed remaining string from start position */
-    if (length > (src.len - (uint32_t)actual_start))
+    /* Clamp positions to valid range */
+    if (actual_start < 0)
     {
-        return;
+        actual_start = 0;
     }
-
-    /* Check that length doesn't exceed destination capacity */
-    if (length > dst->max_len)
+    if (actual_end > src_len)
     {
-        return;
+        actual_end = src_len;
     }
 
-    memcpy((void *)dst->str, (void *)(src.str + actual_start), (size_t)length);
-    dst->len = length;
+    /* Check that start is before end */
+    if (actual_start >= actual_end)
+    {
+        return result;
+    }
+
+    /* Calculate substring length - guaranteed non-negative after above checks */
+    int32_t sub_len = actual_end - actual_start;
+
+    /* Create the substring view */
+    result.str     = &src.str[actual_start];
+    result.len     = (uint32_t)sub_len;
+    result.max_len = (uint32_t)sub_len;
+    result.term    = src.term;
+
+    return result;
 }
