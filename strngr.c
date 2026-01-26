@@ -26,37 +26,37 @@ char *strngr_new(str_t *str, char *mem, const uint32_t mem_len)
     return str->str;
 }
 
-char *strngr_new_s(str_t *str, char *mem, const uint32_t mem_len, const char *string)
+str_t strngr_new_s(char *mem, const uint32_t mem_len, const char *string)
 {
-    if ((str == NULL) || (mem == NULL) || (string == NULL))
+    str_t result = {0U, 0U, NULL, 0U};
+
+    if ((mem == NULL) || (string == NULL))
     {
-        return NULL;
+        return result;
     }
 
     if (mem_len == 0U)
     {
-        return NULL;
+        return result;
     }
 
-    str->len     = 0U;
-    str->max_len = mem_len;
-    str->str     = mem;
-    str->term    = 0U;
+    result.max_len = mem_len;
+    result.str     = mem;
 
     /* Get the incoming string length and minimise it */
     uint32_t cpy_len = (uint32_t)strlen(string);
-    if (cpy_len > str->max_len)
+    if (cpy_len > result.max_len)
     {
-        cpy_len = str->max_len;
+        cpy_len = result.max_len;
     }
 
-    memset((void *)str->str, 0U, str->max_len);
-    memcpy((void *)str->str, (const void *)string, (size_t)cpy_len);
+    memset((void *)result.str, 0U, result.max_len);
+    memcpy((void *)result.str, (const void *)string, (size_t)cpy_len);
 
     /* Set the length to match the copied data */
-    str->len = cpy_len;
+    result.len = cpy_len;
 
-    return str->str;
+    return result;
 }
 
 void strngr_reset_to_empty(str_t *str)
@@ -241,16 +241,18 @@ void strngr_strncpy(const str_t src, str_t *dst, uint32_t n)
     dst->len = copy_len;
 }
 
-char *strngr_strstr(const str_t hay, const str_t needle)
+str_t strngr_strstr(const str_t hay, const str_t needle)
 {
+    str_t result = {0U, 0U, NULL, 0U};
+
     if ((hay.str == NULL) || (needle.str == NULL))
     {
-        return NULL;
+        return result;
     }
 
     if (hay.len < needle.len)
     {
-        return NULL;
+        return result;
     }
 
     const uint32_t search_len = hay.len - needle.len;
@@ -267,11 +269,16 @@ char *strngr_strstr(const str_t hay, const str_t needle)
 
         if (j == needle.len)
         {
-            return &hay.str[i];
+            /* Found - return a view from the match position to end of haystack */
+            result.str     = &hay.str[i];
+            result.len     = hay.len - i;
+            result.max_len = hay.len - i;
+            result.term    = hay.term;
+            return result;
         }
     }
 
-    return NULL;
+    return result;
 }
 
 str_t strngr_strsub(const str_t src, const int32_t start, const int32_t end)
